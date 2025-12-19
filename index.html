@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BVR Funds</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #FE4A03;
+        }
+        
+        .btn-primary {
+            background-color: #FE4A03;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #E54303;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(254, 74, 3, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #DC2626;
+        }
+
+        .btn-secondary:hover {
+            background-color: #B91C1C;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background-color: #DC2626;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #B91C1C;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-warning {
+            background-color: #D97706;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background-color: #B45309;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+        
+        .input-focus:focus {
+            border-color: #FE4A03;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(254, 74, 3, 0.1);
+        }
+
+        .logo-text {
+            color: #FE4A03;
+            font-weight: 800;
+        }
+
+        body {
+            background-color: #FFFFFF;
+        }
+
+        .position-card, .position-card-active {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .position-card:hover, .position-card-active:hover {
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .position-card.selected {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+        }
+        
+        .shadow-green-glow {
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+        
+        .shadow-red-glow {
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+        
+        .hover\:scale-102:hover {
+            transform: scale(1.02);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        
+        .badge-primary {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .badge-secondary {
+            background-color: #E5E7EB;
+            color: #6B7280;
+        }
+        
+        .badge-info {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .badge-sm {
+            font-size: 9px;
+            padding: 1px 4px;
+        }
+
+        .mono {
+            font-family: 'Courier New', monospace;
+        }
+        
+        #dashboardPositionsContainer::-webkit-scrollbar,
+        #dashboardOrdersContainer::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #dashboardPositionsContainer::-webkit-scrollbar-track,
+        #dashboardOrdersContainer::-webkit-scrollbar-track {
+            background: #F3F4F6;
+            border-radius: 3px;
+        }
+        
+        #dashboardPositionsContainer::-webkit-scrollbar-thumb,
+        #dashboardOrdersContainer::-webkit-scrollbar-thumb {
+            background: #D1D5DB;
+            border-radius: 3px;
+        }
+        
+        #dashboardPositionsContainer::-webkit-scrollbar-thumb:hover,
+        #dashboardOrdersContainer::-webkit-scrollbar-thumb:hover {
+            background: #9CA3AF;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .menu-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(254, 74, 3, 0.05);
+        }
+        
+        .menu-item.active {
+            background-color: rgba(254, 74, 3, 0.1);
+            border-left: 3px solid #FE4A03;
+            color: #FE4A03;
+            font-weight: 600;
+        }
+
+        .monitor-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .monitor-status.active {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+
+        .monitor-status.inactive {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .pulse {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .log-entry {
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid;
+            font-size: 14px;
+        }
+
+        .log-entry.success {
+            background-color: #DCFCE7;
+            border-color: #16A34A;
+            color: #166534;
+        }
+
+        .log-entry.error {
+            background-color: #FEE2E2;
+            border-color: #DC2626;
+            color: #991B1B;
+        }
+
+        .log-entry.info {
+            background-color: #DBEAFE;
+            border-color: #3B82F6;
+            color: #1E40AF;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .basket-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #FE4A03;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center bg-gray-50">
+        <div class="w-full max-w-md p-8">
+            <div class="text-center mb-8">
+                <h1 class="logo-text text-4xl mb-2">BVR Funds</h1>
+                <p class="text-gray-600">Kite Connect Trading Platform</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Login to Continue</h2>
+                
+                <form id="loginForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">API Key</label>
+                        <input 
+                            type="text" 
+                            id="apiKey" 
+                            required
+                            placeholder="Enter your Kite API Key"
+                            class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">API Secret</label>
+                        <input 
+                            type="password" 
+                            id="apiSecret" 
+                            required
+                            placeholder="Enter your Kite API Secret"
+                            class="input-focus w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900"
+                        />
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="btn-primary w-full text-white font-semibold py-3 rounded-lg"
+                    >
+                        Login with Kite
+                    </button>
+                </form>
+
+                <div id="errorMessage" class="hidden mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                    <p class="text-red-700 text-sm font-medium"></p>
+                </div>
+
+                <div class="mt-6 p-4 bg-blue-50 border-2 border-blue-100 rounded-lg">
+                    <p class="text-blue-800 text-xs">
+                        <strong>Note:</strong> You'll be redirected to Kite login. After authorization, you'll return to this platform.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOKEN PROCESSING PAGE -->
+    <div id="tokenPage" class="hidden min-h-screen flex items-center justify-center bg-gray-50">
+        <div class="w-full max-w-md p-8">
+            <div class="bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-8 text-center">
+                <div class="mb-6">
+                    <div class="inline-block p-4 bg-green-100 rounded-full">
+                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Authentication Successful</h2>
+                <p class="text-gray-600 mb-4">Processing your session...</p>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-xs text-gray-500 font-mono" id="displayToken">Token received</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION -->
+    <div id="mainApp" class="hidden flex min-h-screen">
+        
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-white border-r-2 border-gray-200">
+            <div class="p-6">
+                <h1 class="logo-text text-2xl mb-8">BVR Funds</h1>
+                
+                <nav class="space-y-1">
+                    <div class="menu-item px-4 py-3 rounded-lg active" data-page="dashboard">
+                        <span class="text-sm">Dashboard</span>
+                    </div>
+                    <div class="menu-item px-4 py-3 rounded-lg" data-page="chart-monitor">
+                        <span class="text-sm">Chart Monitor</span>
+                    </div>
+                    <div class="menu-item px-4 py-3 rounded-lg" data-page="option-spreads">
+                        <span class="text-sm">Option Spreads</span>
+                    </div>
+                    <div class="menu-item px-4 py-3 rounded-lg" data-page="future-spreads">
+                        <span class="text-sm">Future Spreads</span>
+                    </div>
+                    <div class="menu-item px-4 py-3 rounded-lg" data-page="short-straddle">
+                        <span class="text-sm">Short Straddle</span>
+                    </div>
+                    <div class="menu-item px-4 py-3 rounded-lg" data-page="manage-positions">
+                        <span class="text-sm">Manage Positions</span>
+                    </div>
+                </nav>
+
+                <!-- Basket Button -->
+                <div class="mt-4 relative">
+                    <button onclick="showBasketModal()" class="w-full btn-primary text-white font-semibold py-3 rounded-lg relative">
+                        🛒 View Basket
+                        <span id="sidebarBasketCount" class="basket-count hidden">0</span>
+                    </button>
+                </div>
+
+                <!-- Emergency Buttons -->
+                <div class="mt-4 space-y-2">
+                    <button onclick="exitAllPositions()" class="w-full btn-danger text-white font-semibold py-3 rounded-lg text-sm">
+                        ⚠️ Exit All Positions
+                    </button>
+                    <button onclick="cancelAllOrders()" class="w-full btn-warning text-white font-semibold py-3 rounded-lg text-sm">
+                        🚫 Cancel All Orders
+                    </button>
+                </div>
+
+                <!-- User Info -->
+                <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                    <div class="text-xs text-gray-500 mb-1">Logged in as</div>
+                    <div class="font-semibold text-sm text-gray-900" id="menuUserName">-</div>
+                    <div class="text-xs text-gray-600 mono" id="menuUserId">-</div>
+                </div>
+
+                <!-- Logout Button -->
+                <button id="logoutBtn" class="w-full mt-4 px-4 py-2 border-2 border-red-200 text-red-600 font-semibold rounded-lg hover:bg-red-50 transition-colors">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1">
+            
+            <!-- Profile Section (Top Bar) -->
+            <div id="profileSection" class="bg-white border-b-2 border-gray-200 px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900" id="profileName">-</h2>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="exitAllPositions()" class="btn-danger text-white font-semibold px-4 py-2 rounded-lg text-sm">
+                            ⚠️ Exit All
+                        </button>
+                        <button onclick="cancelAllOrders()" class="btn-warning text-white font-semibold px-4 py-2 rounded-lg text-sm">
+                            🚫 Cancel All
+                        </button>
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-lg" id="profileInitials">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="p-8">
+                <!-- Header -->
+                <div class="mb-4">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-1">Dashboard</h1>
+                    <p class="text-gray-600 text-sm">Real-time overview of your trading activity</p>
+                </div>
+
+                <!-- P&L Cards Grid -->
+                <div class="mb-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-sm font-bold text-gray-700">Daily P&L Summary</h2>
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span class="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                            <span>Auto-refresh (10s)</span>
+                        </div>
+                    </div>
+                    <div id="dashboardPnlCards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+                        <!-- P&L Cards will be dynamically inserted here -->
+                        <div class="bg-white border-2 border-gray-200 rounded-lg p-3 col-span-2 sm:col-span-3 lg:col-span-7">
+                            <p class="text-center text-gray-500 text-sm py-2">Loading P&L data...</p>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Positions and Orders Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <!-- POSITIONS -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-lg font-bold text-gray-900">Positions</h2>
+                            <div class="flex items-center gap-2 text-xs text-gray-500">
+                                <span class="inline-block w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                <span>5s</span>
+                            </div>
+                        </div>
+                        
+                        <div id="dashboardPositionsContainer" class="space-y-1 max-h-[500px] overflow-y-auto">
+                            <p class="text-center text-gray-500 py-6 text-sm">Loading positions...</p>
+                        </div>
+                    </div>
+            
+                    <!-- ORDERS -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-lg font-bold text-gray-900">Orders</h2>
+                            <div class="flex items-center gap-2 text-xs text-gray-500">
+                                <span class="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                                <span>15s</span>
+                            </div>
+                        </div>
+                        
+                        <div id="dashboardOrdersContainer" class="space-y-1 max-h-[500px] overflow-y-auto">
+                            <p class="text-center text-gray-500 py-6 text-sm">Loading orders...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Monitor Page -->
+            <div id="chartMonitorPage" class="p-8 hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Chart Monitor</h1>
+                    <p class="text-gray-600">Monitor candle strength and get email alerts</p>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900 mb-1">Monitor Status</h2>
+                            <p class="text-sm text-gray-600">Checks periodically for strong candles</p>
+                        </div>
+                        <div id="monitorStatus" class="monitor-status inactive">
+                            <div class="pulse bg-red-600"></div>
+                            <span>Stopped</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Instrument Token</label>
+                            <input
+                                type="number"
+                                id="instrumentToken"
+                                value="256265"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Default: NIFTY 50 (256265)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Interval</label>
+                            <select
+                                id="intervalSelect"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            >
+                                <option value="minute">1 Minute</option>
+                                <option value="3minute">3 Minutes</option>
+                                <option value="5minute">5 Minutes</option>
+                                <option value="10minute">10 Minutes</option>
+                                <option value="15minute" selected>15 Minutes</option>
+                                <option value="30minute">30 Minutes</option>
+                                <option value="60minute">1 Hour</option>
+                                <option value="day">1 Day</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Threshold (%)</label>
+                            <input
+                                type="number"
+                                id="thresholdPercent"
+                                value="75"
+                                min="0"
+                                max="100"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Alert when body is above this %</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Check Frequency</label>
+                            <select
+                                id="checkFrequency"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            >
+                                <option value="60">1 Minute</option>
+                                <option value="180">3 Minutes</option>
+                                <option value="300" selected>5 Minutes</option>
+                                <option value="600">10 Minutes</option>
+                                <option value="900">15 Minutes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <button id="startMonitorBtn" class="btn-primary text-white font-semibold px-6 py-3 rounded-lg transition-all hover:shadow-lg">
+                            Start Monitor
+                        </button>
+                        <button id="stopMonitorBtn" class="btn-secondary text-white font-semibold px-6 py-3 rounded-lg hidden transition-all hover:shadow-lg">
+                            Stop Monitor
+                        </button>
+                        <button id="checkNowBtn" class="border-2 border-gray-300 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-50 transition-all">
+                            Check Now
+                        </button>
+                        <button id="testEmailBtn" class="border-2 border-[#FE4A03] text-[#FE4A03] font-semibold px-6 py-3 rounded-lg hover:bg-[#FE4A03] hover:text-white transition-all">
+                            Test Email
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Activity Log</h2>
+                    <div id="activityLog" class="space-y-2 max-h-96 overflow-y-auto">
+                        <div class="log-entry info">
+                            <span class="text-xs">Ready to start monitoring</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option Spreads Page -->
+            <div id="optionSpreadsPage" class="p-8 hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Option Spreads</h1>
+                    <p class="text-gray-600">Put and Call Option Spread Strategies</p>
+                </div>
+            
+                <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Strategy Parameters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Skip Strikes</label>
+                            <input
+                                type="number"
+                                id="putSkipStrikes"
+                                value="5"
+                                min="1"
+                                max="20"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Strikes to skip for hedge</p>
+                        </div>
+            
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Expiry (Days)</label>
+                            <input
+                                type="number"
+                                id="putExpiry"
+                                value="2"
+                                min="1"
+                                max="30"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Min days to expiry</p>
+                        </div>
+            
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Number of Lots</label>
+                            <input
+                                type="number"
+                                id="putLots"
+                                value="1"
+                                min="1"
+                                max="100"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Lot quantity</p>
+                        </div>
+                        
+                        <input type="hidden" id="callSkipStrikes" value="5" />
+                        <input type="hidden" id="callExpiry" value="2" />
+                        <input type="hidden" id="callLots" value="1" />
+                    </div>
+                </div>
+            
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- PUT OPTION SPREAD -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">Put Option Spread</h2>
+                        <p class="text-sm text-gray-600 mb-6">Sell ATM PUT + Buy Lower Strike PUT</p>
+            
+                        <button id="fetchPutSpreadBtn" class="w-full btn-primary text-white font-semibold py-3 rounded-lg mb-6">
+                            Fetch Put Spread
+                        </button>
+            
+                        <div id="putSpreadResult" class="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <p class="text-center text-gray-500 text-sm">Click "Fetch Put Spread" to load strategy</p>
+                        </div>
+                    </div>
+            
+                    <!-- CALL OPTION SPREAD -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">Call Option Spread</h2>
+                        <p class="text-sm text-gray-600 mb-6">Sell ATM CALL + Buy Higher Strike CALL</p>
+            
+                        <button id="fetchCallSpreadBtn" class="w-full btn-primary text-white font-semibold py-3 rounded-lg mb-6">
+                            Fetch Call Spread
+                        </button>
+            
+                        <div id="callSpreadResult" class="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <p class="text-center text-gray-500 text-sm">Click "Fetch Call Spread" to load strategy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Spreads Page -->
+            <div id="futureSpreadsPage" class="p-8 hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Future Spreads</h1>
+                    <p class="text-gray-600">Bullish and Bearish Future Spread Strategies</p>
+                </div>
+            
+                <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Strategy Parameters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Lower Premium (₹)</label>
+                            <input
+                                type="number"
+                                id="bullishLowerPremium"
+                                value="40"
+                                min="0"
+                                step="0.5"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                        </div>
+            
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Upper Premium (₹)</label>
+                            <input
+                                type="number"
+                                id="bullishUpperPremium"
+                                value="60"
+                                min="0"
+                                step="0.5"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                        </div>
+            
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Days to Expiry</label>
+                            <input
+                                type="number"
+                                id="bullishDays"
+                                value="2"
+                                min="1"
+                                max="30"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                        </div>
+            
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Number of Lots</label>
+                            <input
+                                type="number"
+                                id="bullishLots"
+                                value="1"
+                                min="1"
+                                max="100"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                        </div>
+                        
+                        <input type="hidden" id="bearishLowerPremium" value="40" />
+                        <input type="hidden" id="bearishUpperPremium" value="60" />
+                        <input type="hidden" id="bearishDays" value="2" />
+                        <input type="hidden" id="bearishLots" value="1" />
+                    </div>
+                </div>
+            
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- BULLISH FUTURE SPREAD -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">Bullish Future Spread</h2>
+                        <p class="text-sm text-gray-600 mb-6">Buy NIFTY Future + Buy PUT Hedge</p>
+            
+                        <button id="fetchBullishSpreadBtn" class="w-full btn-primary text-white font-semibold py-3 rounded-lg mb-6">
+                            Fetch Bullish Spread
+                        </button>
+            
+                        <div id="bullishSpreadResult" class="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <p class="text-center text-gray-500 text-sm">Click "Fetch Bullish Spread" to load strategy</p>
+                        </div>
+                    </div>
+            
+                    <!-- BEARISH FUTURE SPREAD -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">Bearish Future Spread</h2>
+                        <p class="text-sm text-gray-600 mb-6">Sell NIFTY Future + Buy CALL Hedge</p>
+            
+                        <button id="fetchBearishSpreadBtn" class="w-full btn-primary text-white font-semibold py-3 rounded-lg mb-6">
+                            Fetch Bearish Spread
+                        </button>
+            
+                        <div id="bearishSpreadResult" class="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <p class="text-center text-gray-500 text-sm">Click "Fetch Bearish Spread" to load strategy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Short Straddle Page -->
+            <div id="shortStraddlePage" class="p-8 hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Short Straddle Strategy</h1>
+                    <p class="text-gray-600">Automated ATM straddle with intelligent trailing stop loss</p>
+                </div>
+
+                <!-- Strategy Parameters -->
+                <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Strategy Parameters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Skip Strikes</label>
+                            <input
+                                type="number"
+                                id="straddleSkipStrikes"
+                                value="9"
+                                min="1"
+                                max="20"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Strikes to skip for hedge</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Expiry (Days)</label>
+                            <input
+                                type="number"
+                                id="straddleExpiry"
+                                value="2"
+                                min="1"
+                                max="30"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Min days to expiry</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Number of Lots</label>
+                            <input
+                                type="number"
+                                id="straddleLots"
+                                value="2"
+                                min="1"
+                                max="100"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Lot quantity</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-900 mb-2">Initial SL (%)</label>
+                            <input
+                                type="number"
+                                id="straddleInitialSL"
+                                value="25"
+                                min="10"
+                                max="100"
+                                step="5"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-gray-900 text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-1">Initial stop loss %</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fetch Strategy Button -->
+                <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                    <button id="fetchStraddleBtn" class="w-full btn-primary text-white font-semibold py-4 rounded-lg text-lg">
+                        Fetch Short Straddle Strategy
+                    </button>
+                </div>
+
+                <!-- Strategy Result -->
+                <div id="straddleResult" class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                    <p class="text-center text-gray-500">Click "Fetch Short Straddle Strategy" to load options</p>
+                </div>
+
+                <!-- Strategy Info Card -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 mb-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 How It Works</h3>
+                    <div class="space-y-3 text-sm text-gray-700">
+                        <div class="flex items-start">
+                            <span class="text-blue-600 mr-2">1️⃣</span>
+                            <div>
+                                <strong>Entry:</strong> Sell ATM Call + ATM Put (collect premium), Buy protective hedges
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-blue-600 mr-2">2️⃣</span>
+                            <div>
+                                <strong>Initial Protection:</strong> Automatic stop loss placed at your specified % above entry price
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-blue-600 mr-2">3️⃣</span>
+                            <div>
+                                <strong>First Leg Hits SL:</strong> When either CE or PE hits SL, the other leg's SL is revised to its buy price
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-blue-600 mr-2">4️⃣</span>
+                            <div>
+                                <strong>Trailing Begins:</strong> The remaining leg starts trailing with 6 points trail and 0.5 step size
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-blue-600 mr-2">5️⃣</span>
+                            <div>
+                                <strong>Profit Protection:</strong> As price moves in your favor, SL automatically moves to lock in profits
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Straddle Monitor Section -->
+                <div id="straddleMonitor" class="hidden">
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6 mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-900">📊 Active Straddle Monitor</h3>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-sm font-semibold text-green-600">LIVE</span>
+                            </div>
+                        </div>
+                        <div id="straddleStatusContent">
+                            <div class="text-center text-gray-500 py-8">Loading status...</div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Logs -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">📝 Activity Logs</h3>
+                        <div id="straddleLogsContent" class="space-y-2 max-h-96 overflow-y-auto">
+                            <div class="text-center text-gray-500 py-4 text-sm">No logs yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Positions Page -->
+            <div id="managePositionsPage" class="p-8 hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Manage Positions</h1>
+                    <p class="text-gray-600">View and manage your open trading positions with trailing stop loss</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left Column: Positions List -->
+                    <div>
+                        <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-bold text-gray-900">Open Positions</h2>
+                                <button id="refreshPositionsBtn" 
+                                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold text-sm">
+                                    🔄 Refresh
+                                </button>
+                            </div>
+                            
+                            <div id="positionsList" class="space-y-2">
+                                <div class="text-center text-gray-500 py-8">Loading positions...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Actions Panel -->
+                    <div>
+                        <!-- Selected Position Info -->
+                        <div id="positionActionsPanel" class="hidden space-y-4">
+                            <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                                <h3 class="text-lg font-bold text-gray-900 mb-4">Selected Position</h3>
+                                <div id="selectedPositionInfo"></div>
+                                
+                                <div class="mt-4 grid grid-cols-2 gap-3">
+                                    <button id="trailSlBtn" 
+                                            class="btn-primary text-white font-semibold px-6 py-3 rounded-lg">
+                                        🎯 Trail SL
+                                    </button>
+                                    <button id="exitImmediatelyBtn" 
+                                            class="btn-danger text-white font-semibold px-6 py-3 rounded-lg">
+                                        ⚡ Exit Now
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Messages -->
+                            <div id="positionMessages"></div>
+                            
+                            <!-- Trail SL Configuration -->
+                            <div id="trailSlConfig" class="hidden bg-white border-2 border-gray-200 rounded-xl p-6">
+                                <h3 class="text-lg font-bold text-gray-900 mb-4">Configure Trailing Stop Loss</h3>
+                                <div id="trailConfigContent"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Initial State Message -->
+                        <div id="noSelectionMessage" class="bg-white border-2 border-gray-200 rounded-xl p-6">
+                            <div class="text-center py-12">
+                                <div class="text-6xl mb-4">👆</div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Select a Position</h3>
+                                <p class="text-gray-600">Click on a position from the list to manage it</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trail Status - Full Width Below -->
+                <div id="trailStatus" class="hidden mt-6 bg-white border-2 border-gray-200 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">📊 Real-Time Trailing Status</h3>
+                    <div id="trailStatusContent"></div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="mt-8 bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+                    <h3 class="text-lg font-bold text-blue-900 mb-3">ℹ️ How to Use</h3>
+                    <div class="space-y-2 text-sm text-blue-800">
+                        <p><strong>1. Select Position:</strong> Click on any position from the list to manage it</p>
+                        <p><strong>2. Trail SL:</strong> Set up manual or automated trailing stop loss to protect profits</p>
+                        <p><strong>3. Exit Now:</strong> Immediately exit position at market price</p>
+                        <p><strong>4. Manual Trail:</strong> Adjust stop loss manually using +/- buttons</p>
+                        <p><strong>5. Auto Trail:</strong> Let the system automatically trail your stop loss in real-time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- BASKET MODAL -->
+<div id="basketModal" class="modal">
+    <div class="modal-content">
+        <div class="p-6 border-b-2 border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900">Order Basket</h2>
+                <button onclick="closeBasketModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <div id="basketOrders" class="space-y-3 mb-6">
+                <!-- Orders will be populated here -->
+            </div>
+
+            <div id="basketMarginInfo" class="hidden bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+                <!-- Margin info will be populated here -->
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="checkBasketMargin()" class="flex-1 border-2 border-[#FE4A03] text-[#FE4A03] font-semibold py-3 rounded-lg hover:bg-[#FE4A03] hover:text-white transition-all">
+                    Check Margin
+                </button>
+                <button onclick="deployBasket()" class="flex-1 btn-primary text-white font-semibold py-3 rounded-lg">
+                    Deploy Orders
+                </button>
+                <button onclick="clearBasketUI()" class="border-2 border-red-200 text-red-600 font-semibold px-6 py-3 rounded-lg hover:bg-red-50 transition-all">
+                    Clear All
+                </button>
+            </div>
+
+            <div id="basketDeploymentResults" class="hidden mt-6">
+                <!-- Deployment results will be shown here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EMERGENCY ACTIONS MODAL -->
+<div id="emergencyModal" class="modal">
+    <div class="modal-content">
+        <div class="p-6 border-b-2 border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-gray-900" id="emergencyModalTitle">Emergency Action</h2>
+                <button onclick="closeEmergencyModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <div id="emergencyModalContent" class="mb-6">
+                <!-- Content will be populated dynamically -->
+            </div>
+
+            <div id="emergencyResults" class="hidden">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load JavaScript Modules -->
+<script src="basket_manager.js"></script>
+<script src="emergency_actions.js"></script>
+<script src="login.js"></script>
+<script src="chart_monitor.js"></script>
+<script src="option_spreads.js"></script>
+<script src="future_spreads.js"></script>
+<script src="short_straddle.js"></script>
+<script src="manage_positions.js"></script>
+<script src="js/logout_handler.js"></script>
+<script src="dashboard.js"></script>
+
+<script>
+    // Hide no selection message when position is selected
+    document.addEventListener('DOMContentLoaded', function() {
+        const observer = new MutationObserver(function() {
+            const actionsPanel = document.getElementById('positionActionsPanel');
+            const noSelectionMsg = document.getElementById('noSelectionMessage');
+            
+            if (actionsPanel && !actionsPanel.classList.contains('hidden')) {
+                noSelectionMsg?.classList.add('hidden');
+            } else {
+                noSelectionMsg?.classList.remove('hidden');
+            }
+        });
+        
+        const actionsPanel = document.getElementById('positionActionsPanel');
+        if (actionsPanel) {
+            observer.observe(actionsPanel, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+        }
+    });
+
+    // Sync shared inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sync option spreads inputs
+        const putSkipStrikes = document.getElementById('putSkipStrikes');
+        const putExpiry = document.getElementById('putExpiry');
+        const putLots = document.getElementById('putLots');
+        const callSkipStrikes = document.getElementById('callSkipStrikes');
+        const callExpiry = document.getElementById('callExpiry');
+        const callLots = document.getElementById('callLots');
+        
+        if (putSkipStrikes && callSkipStrikes) {
+            callSkipStrikes.value = putSkipStrikes.value;
+            putSkipStrikes.addEventListener('input', function() {
+                callSkipStrikes.value = this.value;
+            });
+        }
+        
+        if (putExpiry && callExpiry) {
+            callExpiry.value = putExpiry.value;
+            putExpiry.addEventListener('input', function() {
+                callExpiry.value = this.value;
+            });
+        }
+        
+        if (putLots && callLots) {
+            callLots.value = putLots.value;
+            putLots.addEventListener('input', function() {
+                callLots.value = this.value;
+            });
+        }
+        
+        // Sync future spreads inputs
+        const bullishLowerPremium = document.getElementById('bullishLowerPremium');
+        const bullishUpperPremium = document.getElementById('bullishUpperPremium');
+        const bullishDays = document.getElementById('bullishDays');
+        const bullishLots = document.getElementById('bullishLots');
+        const bearishLowerPremium = document.getElementById('bearishLowerPremium');
+        const bearishUpperPremium = document.getElementById('bearishUpperPremium');
+        const bearishDays = document.getElementById('bearishDays');
+        const bearishLots = document.getElementById('bearishLots');
+        
+        if (bullishLowerPremium && bearishLowerPremium) {
+            bearishLowerPremium.value = bullishLowerPremium.value;
+            bullishLowerPremium.addEventListener('input', function() {
+                bearishLowerPremium.value = this.value;
+            });
+        }
+        
+        if (bullishUpperPremium && bearishUpperPremium) {
+            bearishUpperPremium.value = bullishUpperPremium.value;
+            bullishUpperPremium.addEventListener('input', function() {
+                bearishUpperPremium.value = this.value;
+            });
+        }
+        
+        if (bullishDays && bearishDays) {
+            bearishDays.value = bullishDays.value;
+            bullishDays.addEventListener('input', function() {
+                bearishDays.value = this.value;
+            });
+        }
+        
+        if (bullishLots && bearishLots) {
+            bearishLots.value = bullishLots.value;
+            bullishLots.addEventListener('input', function() {
+                bearishLots.value = this.value;
+            });
+        }
+    });
+
+    // Global navigation function
+    function navigateToPage(pageName) {
+        document.querySelectorAll('[id$="Page"]').forEach(page => {
+            page.classList.add('hidden');
+        });
+        
+        const pageMap = {
+            'dashboard': 'dashboardPage',
+            'chart-monitor': 'chartMonitorPage',
+            'option-spreads': 'optionSpreadsPage',
+            'future-spreads': 'futureSpreadsPage',
+            'short-straddle': 'shortStraddlePage',
+            'manage-positions': 'managePositionsPage'
+        };
+        
+        const targetPage = document.getElementById(pageMap[pageName]);
+        if (targetPage) {
+            targetPage.classList.remove('hidden');
+        }
+        
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-page="${pageName}"]`)?.classList.add('active');
+    }
+
+    // Basket Modal Functions
+    function showBasketModal() {
+        updateBasketOrdersDisplay();
+        document.getElementById('basketModal').classList.add('show');
+    }
+
+    function closeBasketModal() {
+        document.getElementById('basketModal').classList.remove('show');
+    }
+
+    function updateBasketOrdersDisplay() {
+        const orders = window.BasketManager.getOrders();
+        const container = document.getElementById('basketOrders');
+        
+        if (orders.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-500 py-8">No orders in basket</p>';
+            return;
+        }
+        
+        let html = '';
+        orders.forEach((order, index) => {
+            const bgColor = order.transaction_type === 'BUY' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+            const textColor = order.transaction_type === 'BUY' ? 'text-green-700' : 'text-red-700';
+            
+            html += `
+                <div class="border-2 ${bgColor} rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-1 ${bgColor} ${textColor} text-xs font-semibold rounded">${order.transaction_type}</span>
+                                <span class="font-mono font-semibold text-gray-900">${order.tradingsymbol}</span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <span>Lots: ${order.lots}</span> • 
+                                <span>${order.product}</span> • 
+                                <span>${order.order_type}</span>
+                            </div>
+                        </div>
+                        <button onclick="removeOrderFromBasketUI('${order.tradingsymbol}', '${order.transaction_type}')" 
+                                class="text-red-500 hover:text-red-700 font-bold text-xl">×</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+
+    function removeOrderFromBasketUI(symbol, transactionType) {
+        window.BasketManager.removeOrder(symbol, transactionType);
+        updateBasketOrdersDisplay();
+        updateBasketCountDisplay();
+    }
+
+    function clearBasketUI() {
+        if (confirm('Clear all orders from basket?')) {
+            window.BasketManager.clearBasket();
+            updateBasketOrdersDisplay();
+            updateBasketCountDisplay();
+            document.getElementById('basketMarginInfo').classList.add('hidden');
+            document.getElementById('basketDeploymentResults').classList.add('hidden');
+        }
+    }
+
+    function updateBasketCountDisplay() {
+        const count = window.BasketManager.getCount();
+        const badge = document.getElementById('sidebarBasketCount');
+        
+        if (count > 0) {
+            badge.textContent = count;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    async function checkBasketMargin() {
+        const resultDiv = document.getElementById('basketMarginInfo');
+        resultDiv.innerHTML = '<p class="text-center">Checking margin...</p>';
+        resultDiv.classList.remove('hidden');
+        
+        await window.BasketManager.checkMargin(
+            (marginInfo) => {
+                const html = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="font-semibold">Available Balance:</span>
+                            <span class="font-bold text-green-600">${window.BasketManager.formatCurrency(marginInfo.available)}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="font-semibold">Required Margin:</span>
+                            <span class="font-bold text-blue-600">${window.BasketManager.formatCurrency(marginInfo.required)}</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t-2 border-blue-300">
+                            <span class="font-semibold">Status:</span>
+                            <span class="font-bold ${marginInfo.sufficient ? 'text-green-600' : 'text-red-600'}">
+                                ${marginInfo.sufficient ? '✓ Sufficient' : '✗ Insufficient'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                resultDiv.innerHTML = html;
+            },
+            (error) => {
+                resultDiv.innerHTML = `<p class="text-center text-red-600">${error}</p>`;
+            }
+        );
+    }
+
+    async function deployBasket() {
+        if (!confirm('Deploy all orders in basket?')) return;
+        
+        const resultDiv = document.getElementById('basketDeploymentResults');
+        resultDiv.innerHTML = '<p class="text-center py-4">Deploying orders...</p>';
+        resultDiv.classList.remove('hidden');
+        
+        await window.BasketManager.deploy(
+            (message, progress) => {
+                resultDiv.innerHTML = `<p class="text-center py-4">${message}</p>`;
+            },
+            (summary) => {
+                let html = `
+                    <div class="bg-white border-2 border-gray-200 rounded-lg p-4">
+                        <h3 class="font-bold text-lg mb-4">Deployment Complete</h3>
+                        <div class="grid grid-cols-3 gap-4 mb-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-gray-900">${summary.total}</div>
+                                <div class="text-xs text-gray-600">Total</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-green-600">${summary.successful}</div>
+                                <div class="text-xs text-gray-600">Success</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-red-600">${summary.failed}</div>
+                                <div class="text-xs text-gray-600">Failed</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2 max-h-96 overflow-y-auto">
+                `;
+                
+                summary.results.forEach(result => {
+                    const statusClass = result.success ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700';
+                    html += `
+                        <div class="border-2 ${statusClass} rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-mono font-semibold text-sm">${result.symbol}</span>
+                                <span class="text-xs font-bold">${result.status}</span>
+                            </div>
+                            ${result.success ? `
+                                <div class="text-xs">
+                                    Order ID: ${result.order_id} • 
+                                    Lots: ${result.lots} • 
+                                    Qty: ${result.quantity}
+                                </div>
+                            ` : `
+                                <div class="text-xs">${result.error}</div>
+                            `}
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+                
+                resultDiv.innerHTML = html;
+                updateBasketOrdersDisplay();
+                updateBasketCountDisplay();
+            },
+            (error) => {
+                resultDiv.innerHTML = `<p class="text-center text-red-600 py-4">Error: ${error}</p>`;
+            }
+        );
+    }
+
+    // Setup menu navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                navigateToPage(page);
+            });
+        });
+    });
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const basketModal = document.getElementById('basketModal');
+        const emergencyModal = document.getElementById('emergencyModal');
+        
+        if (event.target == basketModal) {
+            closeBasketModal();
+        }
+        if (event.target == emergencyModal) {
+            closeEmergencyModal();
+        }
+    }
+</script>
+</body>
+</html>
